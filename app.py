@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 st.set_page_config(page_title="Exocomet Exploration", layout="wide")
 st.title("Boxplot Prototype")
 st.write("Explore the Minimum and Maximum Radii for the Distributions with this boxplot. This application allows you to explore exocomets in our local galaxy.")
-df = pd.read_csv('midtermdata.csv')
+df = pd.read_csv('/Users/adalyngibson/Documents/Github/MidtermProject/data/midtermdata.csv')
 
 df_alt = df.melt(value_vars=["x1", "x2"], var_name="type", value_name="radius")
 
