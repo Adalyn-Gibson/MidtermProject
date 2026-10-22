@@ -9,7 +9,7 @@ Data has come from the astrophysical data system, from several different publish
 Setup instructions:
 Download the contents of this repository and run the analysis.ipynb notebook to access the streamlight application. Exploring notebooks/analysis.ipynb will allow for a more in depth understanding of the data analysis that went into the user-friendly streamlight application. 
 An environment with the specifications denoted in requirements.txt is required to run the notebooks and streamlight application locally.
-`conda/pip install -r requirements.txt` inside your environment. 
+`conda/pip install -r requirements.txt` inside your environment. Then run `streamlit run app.py` within that environment. 
 
 Key limitations:
 Only two exocomet systems are included here, which significantly limits the ability for us to compare to solar system populations to the exocomet populations. 
