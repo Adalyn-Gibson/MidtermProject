@@ -9,31 +9,6 @@ st.image("/Users/adalyngibson/Documents/Github/MidtermProject/figures/comet_pict
 st.write("What is an exocomet? An exocomet is like any comet in our solar system, think of the icy spherical bodies with large tails as pictured above, but the exo means it exists in another stellar systems, orbiting a star other than our Sun. Scientists care about gaining an understanding of exocomets because of their applications to planet formation science and to interstellar object science. Interstellar objects are exocomets that have escaped their system and have ended up in ours!")
 
 
-st.title("Distribution of Exocomet and Comet Radii")
-st.write("Explore the Minimum and Maximum Radii for the Distributions with this boxplot. This application allows you to explore exocomets in our local galaxy by viewing the distributions of the minimum and maximum radii for all populations. Click on the boxes to view details of the minimum and maximum radii.")
-
-
-df = pd.read_csv('/Users/adalyngibson/Documents/Github/MidtermProject/data/midtermdata.csv')
-
-
-df_alt = df.melt(value_vars=["x1", "x2"], var_name="type_raw", value_name="radius")
-df_alt["type"] = df_alt["type_raw"].map({"x1": "Min Radius", "x2": "Max Radius"})
-
-box = (
-    alt.Chart(df_alt)
-    .mark_boxplot(extent="min-max", size=60)
-    .encode(
-        x=alt.X("type:N", title="Minimum and Maximum Radii Across All Populations", sort=["Min Radius", "Max Radius"], axis=alt.Axis(labelFontSize=22, titleFontSize=22, labelAngle=0)),
-        y=alt.Y("radius:Q", title="Radius of (Exo)Comet(km)", axis=alt.Axis(labelFontSize=22, titleFontSize=22)),
-        color=alt.Color("type:N", scale=alt.Scale(
-                domain=["Min Radius", "Max Radius"],
-                range=["#70D6FF", "#FF9770"] 
-            ),legend=None), stroke=alt.value("white")))
-
-chart_box = (alt.layer(box).properties(width=800, height=450, title="Radius Distribution for all Populations").configure_title(fontSize=22).configure_axis(labelFontSize=22, titleFontSize=22))
-
-st.altair_chart(chart_box, use_container_width=True)
-#display(chart_box)
 # adapting from matplotlib to altair
 # bp = beta pic
 # rz = rz psc
@@ -42,6 +17,18 @@ st.title("Cumulative Size Distribution of Exocomet and Comet Radii")
 st.write("Explore what the size distribution of exocomets in the local galaxy look like. This visualization shows how many exocomets exist in a system above a certain radius (units of kilometers (km) - 1 km is the size of a soccer field). RZ Psc has two populations of exocomets represented by the broken size distribution in blue. The dotted lines represent the different solar system comet populations and the solid lines represent the different exocomet systems. Click on the line to view specifics of the system.")
 
 
+# add deselect feature - seen in other people's projects: 
+df = pd.read_csv('/Users/adalyngibson/Documents/Github/MidtermProject/data/midtermdata.csv')
+exclude_stars = ["Beta Pictoris", "RZ Psc"]
+available_stars = [s for s in sorted(df["star"].dropna().unique()) if s not in exclude_stars]
+
+selected_stars = st.multiselect(
+    "Choose solar populations to display",
+    options=available_stars,
+    default=available_stars
+)
+filtered_df = df[df["star"].isin(selected_stars)].copy()
+
 df_bp = df[df["TIC_ID"] == 270577175].copy()
 row_bp = df_bp.iloc[0]
 
@@ -49,7 +36,7 @@ df_rz = df[df["TIC_ID"] == 15693497].copy()
 row_rz_0 = df_rz.iloc[0]
 row_rz_1 = df_rz.iloc[1]
 
-df_solor = df[(df["TIC_ID"] != 270577175) & (df["TIC_ID"] != 15693497)].copy()
+df_solor = filtered_df[(filtered_df["TIC_ID"] != 270577175) & (filtered_df["TIC_ID"] != 15693497)].copy()
 
 bp_df = pd.DataFrame([{
     "star": row_bp["star"],
@@ -137,4 +124,25 @@ chart_scat = (
         fontSize=22)
 ).interactive()
 st.altair_chart(chart_scat)
-#display(chart_scat)
+
+st.title("Distribution of Exocomet and Comet Radii")
+st.write("Explore the Minimum and Maximum Radii for the Distributions with this boxplot. This application allows you to explore exocomets in our local galaxy by viewing the distributions of the minimum and maximum radii for all populations. Click on the boxes to view details of the minimum and maximum radii.")
+
+
+df_alt = df.melt(value_vars=["x1", "x2"], var_name="type_raw", value_name="radius")
+df_alt["type"] = df_alt["type_raw"].map({"x1": "Min Radius", "x2": "Max Radius"})
+
+box = (
+    alt.Chart(df_alt)
+    .mark_boxplot(extent="min-max", size=60)
+    .encode(
+        x=alt.X("type:N", title="Minimum and Maximum Radii Across All Populations", sort=["Min Radius", "Max Radius"], axis=alt.Axis(labelFontSize=22, titleFontSize=22, labelAngle=0)),
+        y=alt.Y("radius:Q", title="Radius of (Exo)Comet(km)", axis=alt.Axis(labelFontSize=22, titleFontSize=22)),
+        color=alt.Color("type:N", scale=alt.Scale(
+                domain=["Min Radius", "Max Radius"],
+                range=["#70D6FF", "#FF9770"] 
+            ),legend=None), stroke=alt.value("white")))
+
+chart_box = (alt.layer(box).properties(width=800, height=450, title="Radius Distribution for all Populations").configure_title(fontSize=22).configure_axis(labelFontSize=22, titleFontSize=22))
+
+st.altair_chart(chart_box, use_container_width=True)
